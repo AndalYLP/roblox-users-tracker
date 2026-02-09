@@ -25,48 +25,46 @@ async def manage_data_create_embed(
         ]
 
     user_game_info = gameid_list[presence.userId]
-    current_gameid = user_game_info[0][1]
-    is_different_game = presence.jobId and current_gameid != presence.jobId
-    is_offline = presence.userPresenceType == 0 and current_gameid is None
+    last_gameid = user_game_info[0][1]
+    is_different_game = last_gameid != presence.jobId
+    is_offline = presence.userPresenceType == 0 and presence.jobId is None
     message_sent = False
 
+    if bot.tracking.get(presence.userId) and is_different_game:
+        try:
+            result_time = round(time()) - int(user_game_info[1][1][3:-3])
+            time_in_game = (
+                f"{result_time} Seconds"
+                if result_time < 60
+                else f"{result_time // 60}:{result_time % 60:02d} Minutes"
+            )
+
+            embed = discord.Embed(title="Time in game: " + time_in_game, color=46847)
+
+            embed.add_field(
+                name="From:",
+                value=f"Game: **{user_game_info[3]}**\nGameId: **{user_game_info[0][1]}**\nLobby: **{user_game_info[2]}**",
+                inline=True,
+            )
+            embed.add_field(
+                name="To:",
+                value=f"Game: **{presence.lastlocation}**\nGameId: **{presence.jobId}**\nLobby: **{presence.lobbyStatus}**",
+                inline=True,
+            )
+
+            await bot.tracking[presence.userId][0].send(
+                content=f"<t:{round(time())}:R>{"".join(bot.tracking[presence.userId][1])}",
+                embed=embed,
+            )
+
+        except Exception as e:
+            logger.exception(e)
+
     if is_different_game or is_offline:
-        if bot.tracking.get(presence.userId):
-            try:
-                result_time = round(time()) - int(user_game_info[1][1][3:-3])
-                time_in_game = (
-                    f"{result_time} Seconds"
-                    if result_time < 60
-                    else f"{result_time // 60}:{result_time % 60:02d} Minutes"
-                )
-
-                embed = discord.Embed(
-                    title="Time in game: " + time_in_game, color=46847
-                )
-
-                embed.add_field(
-                    name="From:",
-                    value=f"Game: **{user_game_info[3]}**\nGameId: **{user_game_info[0][1]}**\nLobby: **{user_game_info[2]}**",
-                    inline=True,
-                )
-                embed.add_field(
-                    name="To:",
-                    value=f"Game: **{presence.lastlocation}**\nGameId: **{presence.jobId}**\nLobby: **{presence.lobbyStatus}**",
-                    inline=True,
-                )
-
-                await bot.tracking[presence.userId][0].send(
-                    content=f"<t:{round(time())}:R>{"".join(bot.tracking[presence.userId][1])}",
-                    embed=embed,
-                )
-
-            except Exception as e:
-                logger.exception(e)
-
         user_game_info[2] = presence.lobbyStatus
         user_game_info[3] = presence.lastlocation
         user_game_info[1][0] = user_game_info[1][1]
-        user_game_info[0][0] = current_gameid
+        user_game_info[0][0] = last_gameid
         user_game_info[1][1] = f"<t:{round(time())}:R>"
         user_game_info[0][1] = presence.jobId
 
