@@ -27,7 +27,7 @@ async def manage_data_create_embed(
     user_game_info = gameid_list[presence.userId]
     current_gameid = user_game_info[0][1]
     is_different_game = presence.jobId and current_gameid != presence.jobId
-    is_offline = presence.userPresenceType == 0 and current_gameid
+    is_offline = presence.userPresenceType == 0 and current_gameid is not None
     message_sent = False
 
     if is_different_game or is_offline:
@@ -80,7 +80,7 @@ async def manage_data_create_embed(
     presence_type_code = presenceTypeCode[
         (
             presence.userPresenceType
-            if presence.lobbyStatus == "True" or is_offline != False
+            if presence.lobbyStatus == "True" or is_offline == True
             else "match"
         )
     ]
