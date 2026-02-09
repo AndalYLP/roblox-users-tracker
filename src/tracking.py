@@ -16,18 +16,18 @@ async def manage_data_create_embed(
 ):
     if presence.userId not in gameid_list:
         gameid_list[presence.userId] = [
-            ["nil", presence.jobId or "nil"],
-            ["nil", f"<t:{round(time())}:R>"],
+            [None, presence.jobId or None],
+            [None, f"<t:{round(time())}:R>"],
             presence.lobbyStatus,
             presence.lastlocation,
             presence.userPresenceType,
-            ["nil", f"<t:{round(time())}:R>"],  # not safe time
+            [None, f"<t:{round(time())}:R>"],  # not safe time
         ]
 
     user_game_info = gameid_list[presence.userId]
     current_gameid = user_game_info[0][1]
     is_different_game = presence.jobId and current_gameid != presence.jobId
-    is_offline = presence.userPresenceType == 0 and current_gameid is not None
+    is_offline = presence.userPresenceType == 0 and current_gameid is None
     message_sent = False
 
     if is_different_game or is_offline:
