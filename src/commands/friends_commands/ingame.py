@@ -42,7 +42,9 @@ async def ingame(interaction: discord.Interaction, username: str, sameserver: bo
         presences.filter_by_gameids(GAME_ID, None)
 
         if len(presences) < 1:
-            await interaction.followup.send("No friends in-game found.", ephemeral=True)
+            await interaction.response.send_message(
+                "No friends in-game found.", ephemeral=True
+            )
             return
 
         friends_users = RobloxPy.Users.get_users_by_userid(*presences.userIds)
@@ -79,7 +81,9 @@ async def ingame(interaction: discord.Interaction, username: str, sameserver: bo
                         content=f"<t:{int(time())}:R>", embeds=embedGroup
                     )
         else:
-            await interaction.followup.send("No friends in-game found.", ephemeral=True)
+            await interaction.response.send_message(
+                "No friends in-game found.", ephemeral=True
+            )
 
     except Exception as e:
         logger.exception(e)
