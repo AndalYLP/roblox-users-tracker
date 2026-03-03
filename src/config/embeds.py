@@ -46,7 +46,7 @@ def format_user_embed(
 def format_mutuals_embed(
     mutuals: dict, users: RobloxPy.Users.Users.UserGroup, strict: bool
 ):
-    mutualsUsers = RobloxPy.Users.get_users_by_userid(*mutuals)
+    mutualsUsers = RobloxPy.Users.get_users_by_userid(*mutuals, excludeBanned=True)
 
     embed = discord.Embed(
         color=generalColorCode,

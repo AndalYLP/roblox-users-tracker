@@ -47,7 +47,9 @@ async def ingame(interaction: discord.Interaction, username: str, sameserver: bo
             )
             return
 
-        friends_users = RobloxPy.Users.get_users_by_userid(*presences.userIds)
+        friends_users = RobloxPy.Users.get_users_by_userid(
+            *presences.userIds, excludeBanned=True
+        )
 
         embeds = []
         for presence in presences.presences:
